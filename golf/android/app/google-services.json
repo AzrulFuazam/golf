@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "616742237929",
+    "project_id": "golf-47441",
+    "storage_bucket": "golf-47441.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616742237929:android:532d905111476aa225a278",
+        "android_client_info": {
+          "package_name": "com.example.golf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "616742237929-03fuk9ohr41lt5dpq8m2212t22msm6e1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5efv4-g0guXLuJmc9Nu6w7aUTvE6Zoiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "616742237929-03fuk9ohr41lt5dpq8m2212t22msm6e1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
