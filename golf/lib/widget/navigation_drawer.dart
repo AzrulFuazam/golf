@@ -5,13 +5,32 @@ import 'package:provider/provider.dart';
 import 'package:golf/model/navigation_item.dart';
 import 'package:golf/provider/navigation_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:golf/authentication/login.dart';
 import '../authentication/userModel.dart';
 
-class NavigationDrawerWidget extends StatelessWidget {
+class NavigationDrawerWidget extends StatefulWidget {
+  NavigationDrawerWidget({Key? key}) : super(key: key);
+
+  @override
+  _NavigationDrawerWidget createState() => _NavigationDrawerWidget();
+}
+
+class _NavigationDrawerWidget extends State<NavigationDrawerWidget> {
   static final padding = EdgeInsets.symmetric(horizontal: 20);
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -24,7 +43,7 @@ class NavigationDrawerWidget extends StatelessWidget {
                 urlImage: urlImage,
 
                 //hello:hello,
-                name: user!.displayName!,
+                name: name,
                 email: user!.email!,
               ),
               Container(
@@ -129,7 +148,7 @@ class NavigationDrawerWidget extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                    radius: 30, backgroundImage: NetworkImage(user!.photoURL!)),
+                    radius: 30, backgroundImage: NetworkImage(urlImage)),
                 SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,15 +160,17 @@ class NavigationDrawerWidget extends StatelessWidget {
                           color: Colors.white,
                           overflow: TextOverflow.ellipsis),
                     ),
-                    Text(
-                      name,
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
+                    Text("${loggedInUser.name} ",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        )),
                     const SizedBox(height: 4),
-                    Text(
-                      email,
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
+                    Text("${loggedInUser.email}",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        )),
                   ],
                 ),
                 Spacer(),
@@ -158,16 +179,4 @@ class NavigationDrawerWidget extends StatelessWidget {
           ),
         ),
       );
-  @override
-  void initState() {
-    super.initState();
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      this.loggedInUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
-  }
 }

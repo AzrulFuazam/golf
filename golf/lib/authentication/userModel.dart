@@ -1,6 +1,7 @@
 final hai = 'Selamat Datang';
-final urlImage = '';
+final urlImage = 'assets/golf_ball.jpg';
 final name = '';
+final email = '';
 
 class UserModel {
   String? uid;
