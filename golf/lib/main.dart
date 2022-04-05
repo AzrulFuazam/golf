@@ -5,6 +5,8 @@ import 'package:golf/authentication/login.dart';
 import 'package:golf/provider/navigation_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'authentication/displayprofile.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -17,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
+          ChangeNotifierProvider(create: (context) => EmailSignInProvider()),
           //ChangeNotifierProvider(create: (context) => googlesignin()),
           ChangeNotifierProvider(
               create: (context) => NavigationProvider()), //for navigationBar

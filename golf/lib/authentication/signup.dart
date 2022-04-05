@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:golf/authentication/Splashscreen.dart';
 import 'package:golf/authentication/login.dart';
 import 'package:golf/authentication/userModel.dart';
+import 'package:golf/widget/mp.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -277,9 +278,7 @@ class _SignUpPageState extends State<SignUpPage> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER);
 
-    Navigator.pushAndRemoveUntil(
-        (context),
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-        (route) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
   }
 }

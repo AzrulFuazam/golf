@@ -1,65 +1,44 @@
 import 'dart:io';
-
+import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-//import 'package:golf/data/user.dart';
-import 'package:golf/widget/navigation_drawer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:golf/widget/mp.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
+import '../authentication/displayprofile.dart';
+import '../authentication/userModel.dart';
+import '../widget/navigation_drawer.dart';
 
-class profil extends StatelessWidget {
-  bool circular = false;
-  late PickedFile _imageFile;
-  final ImagePicker _picker = ImagePicker();
+//import 'package:snapshot/snapshot.dart';
 
-  final items = ['Autisme', 'Cerebral Plasy', 'ADHD', 'Down Syndrome'];
-  final user = FirebaseAuth.instance.currentUser;
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+class profil extends StatefulWidget {
+  @override
+  _profilState createState() => _profilState();
+}
 
-  TextEditingController nama = TextEditingController();
-  TextEditingController alamat = TextEditingController();
-  TextEditingController kataLaluan = TextEditingController();
-  TextEditingController doktor = TextEditingController();
-  TextEditingController medikasi = TextEditingController();
-  TextEditingController namaBapa = TextEditingController();
-  TextEditingController hubungan = TextEditingController();
-  TextEditingController nomborTelefon = TextEditingController();
-
-  final Firebase = FirebaseFirestore.instance;
-
-  update() async {
-    try {
-      Firebase.collection("User").doc(nama.text).update({
-        "alamat": alamat.text,
-        "kataLaluan": kataLaluan.text,
-        "doktor": doktor.text,
-        "medikasi": medikasi.text,
-        "namaBapa": namaBapa.text,
-        "hubungan": hubungan.text,
-        "nomborTelefon": nomborTelefon.text,
-      });
-    } catch (e) {
-      print(e);
-    }
+class _profilState extends State<profil> {
+  // File? file;
+  User? user = FirebaseAuth.instance.currentUser;
+  UserModel loggedInUser = UserModel();
+  final _auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
   }
 
-  create() async {
-    try {
-      await Firebase.collection("User").doc(nama.text).set({
-        "nama": nama.text,
-        "alamat": alamat.text,
-        "kataLaluan": kataLaluan.text,
-        "doktor": doktor.text,
-        "medikasi": medikasi.text,
-        "namaBapa": namaBapa.text,
-        "hubungan": hubungan.text,
-        "nomborTelefon": nomborTelefon.text,
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+  final databaseRef = FirebaseFirestore.instance.collection("users");
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -69,174 +48,218 @@ class profil extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Color(0XFF40E0D0),
         ),
-        body: Container(
-          padding: EdgeInsets.only(left: 16, top: 25, right: 16),
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: ListView(
+        body: StreamBuilder(
+            stream: databaseRef.snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                final data = snapshot.requireData;
+                return ListView.builder(
+                    //  itemCount: snapshot.data!.docs.length,
+                    itemCount: data.size,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: Column(
+                          children: <Widget>[
+                            if ('${data.docs[index]['email']}' == user!.email!)
+                              ListTile(
+                                title: Text('Name'),
+                                subtitle: Text(
+                                  // snapshot.data!.docs[index]['name'], context,style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold
+                                  '${data.docs[index]['name']}',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                trailing: Icon(Icons.edit_outlined),
+                                onTap: () {
+                                  updateDialog(
+                                      snapshot.data!.docs[index]['name'],
+                                      context,
+                                      snapshot.hasData);
+                                },
+                                // dense: true,
+                                // selected: true,
+                                // enabled: true,
+                              ),
+                          ],
+                        ),
+                      );
+                    });
+              } else {
+                return CircularProgressIndicator();
+              }
+            }),
+      );
+
+  Future<void> updateDialog(String name, BuildContext context, var key) {
+    var nameController = TextEditingController(text: name);
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Update Data"),
+            content: Column(
               children: [
-                Text(
-                  "Maklumat Pesakit",
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-
-                /*Center(
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 130,
-                        height: 130,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                width: 4,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor),
-                            boxShadow: [
-                              BoxShadow(
-                                  spreadRadius: 2,
-                                  blurRadius: 10,
-                                  color: Colors.black.withOpacity(0.1),
-                                  offset: Offset(0, 10))
-                            ],
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(user!.photoURL!))),
-                      ),
-                    ],
-                  ),
-                ),*/
-                SizedBox(
-                  height: 30, //saiz kotak input
-                ),
-                TextField(
-                    controller: nama,
-                    decoration: InputDecoration(
-                        labelText: 'Nama',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: alamat,
-                    decoration: InputDecoration(
-                        labelText: 'Alamat',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: kataLaluan,
-                    decoration: InputDecoration(
-                        labelText: 'Kata Laluan',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: doktor,
-                    decoration: InputDecoration(
-                        labelText: 'Nama Terapis',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: medikasi,
-                    decoration: InputDecoration(
-                        labelText: 'Diagnosa',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 30, //saiz kotak input
-                ),
-                //DropdownButton<String>(items:items.map(buildMenuItem).toList(),
-
-                Text(
-                  "Maklumat Penjaga",
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: namaBapa,
-                    decoration: InputDecoration(
-                        labelText: 'Nama',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: hubungan,
-                    decoration: InputDecoration(
-                        labelText: 'Hubungan',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: nomborTelefon,
-                    decoration: InputDecoration(
-                        labelText: 'Nombor Telefon',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                SizedBox(
-                  height: 15,
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      style:
-                          TextButton.styleFrom(backgroundColor: Colors.green),
-                      onPressed: () {
-                        update();
-                      },
-                      child: Text("Create"),
-                    )
-                  ],
-                  /* mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RaisedButton(
-                      onPressed: () {},
-                      color: Color(0XFF40E0D0),
-                      padding: EdgeInsets.symmetric(horizontal: 50),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Text(
-                        "KemasKini",
-                        style: TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 2.2,
-                            color: Colors.white),
-                      ),
-                    )
-                  ],*/
-                ),
-                SizedBox(
-                  height: 35,
-                ),
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                      border: UnderlineInputBorder(), labelText: "Name"),
+                )
               ],
             ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    updateProfile(nameController.text, key);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Update")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancel"))
+            ],
+          );
+        });
+  }
+
+  void updateProfile(String name, var key) {
+    Map<String, String> x = {"Name": name};
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    //User? user = _auth.currentUser;
+
+    UserModel userModel = UserModel();
+    //final databaseRef = FirebaseDatabase.instance.ref().child("users");
+    firebaseFirestore.collection("users").doc(user!.uid).update({'name': name});
+    Fluttertoast.showToast(
+        msg: "Saved successfully :) ",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER);
+  }
+}
+//last
+
+
+
+
+/*class profil extends StatefulWidget {
+  @override
+  _profilState createState() => _profilState();
+}
+
+class _profilState extends State<profil> {
+  File? file;
+  User? user = FirebaseAuth.instance.currentUser;
+  UserModel loggedInUser = UserModel();
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
+
+  TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Edit Profile"),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              /* file == null
+                  ? InkWell(
+                      onTap: () {
+                        chooseImage();
+                      },
+                      child: Icon(
+                        Icons.image,
+                        size: 48,
+                      ),
+                    )
+                  : Image.file(file!),*/
+              SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(
+                    labelText: "${loggedInUser.name} ",
+                    hintText: "${loggedInUser.name} ",
+                    border: OutlineInputBorder()),
+              ),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(
+                    labelText: "${loggedInUser.name} ",
+                    //hintText: "Enter name",
+                    border: OutlineInputBorder()),
+              ),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(
+                    labelText: "${loggedInUser.name} ",
+                    //hintText: "Enter name",
+                    border: OutlineInputBorder()),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    updateProfile(context);
+                  },
+                  child: Text("Update profile"))
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  chooseImage() async {
+    XFile? xfile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    print("file " + xfile!.path);
+    file = File(xfile.path);
+    setState(() {});
+  }
+
+  updateProfile(BuildContext context) async {
+    Map<String, dynamic> map = Map();
+    if (file != null) {
+      String url = await uploadImage();
+      map['profileImage'] = url;
+    }
+    map['name'] = _textEditingController.text;
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update(map);
+    Navigator.pop(context);
+  }
+
+  Future<String> uploadImage() async {
+    TaskSnapshot taskSnapshot = await FirebaseStorage.instance
+        .ref()
+        .child("profile")
+        .child(
+            FirebaseAuth.instance.currentUser!.uid + "_" + basename(file!.path))
+        .putFile(file!);
+
+    return taskSnapshot.ref.getDownloadURL();
+  }
 }
+*/
