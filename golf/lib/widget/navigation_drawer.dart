@@ -141,41 +141,40 @@ class _NavigationDrawerWidget extends State<NavigationDrawerWidget> {
   }) =>
       Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: () => selectItem(context, NavigationItem.header),
-          child: Container(
-            padding: padding.add(EdgeInsets.symmetric(vertical: 40)),
-            child: Row(
-              children: [
-                CircleAvatar(
-                    radius: 30, backgroundImage: NetworkImage(urlImage)),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      hai,
+        child: Container(
+          padding: padding.add(EdgeInsets.symmetric(vertical: 40)),
+          child: Row(
+            children: [
+              CircleAvatar(radius: 30, backgroundImage: NetworkImage(urlImage)),
+              SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hai,
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                  Text("${loggedInUser.name} ",
                       style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          overflow: TextOverflow.ellipsis),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      )),
+                  const SizedBox(height: 4),
+                  Text(
+                    "${loggedInUser.email}",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
                     ),
-                    Text("${loggedInUser.name} ",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    const SizedBox(height: 4),
-                    Text("${loggedInUser.email}",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        )),
-                  ],
-                ),
-                Spacer(),
-              ],
-            ),
+                  ),
+                ],
+              ),
+              Spacer(),
+            ],
           ),
         ),
       );

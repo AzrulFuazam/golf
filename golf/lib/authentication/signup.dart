@@ -1,12 +1,12 @@
-import 'package:golf/navigation/testHP.dart';
+//import 'package:golf/navigation/testHP.dart';
 //import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:golf/authentication/Splashscreen.dart';
-import 'package:golf/authentication/login.dart';
+//import 'package:golf/authentication/Splashscreen.dart';
+//import 'package:golf/authentication/login.dart';
 import 'package:golf/authentication/userModel.dart';
 import 'package:golf/widget/mp.dart';
 

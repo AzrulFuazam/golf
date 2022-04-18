@@ -7,8 +7,9 @@ class UserModel {
   String? uid;
   String? email;
   String? name;
+  String? profileImage;
 
-  UserModel({this.uid, this.email, this.name});
+  UserModel({this.uid, this.email, this.name, this.profileImage});
 
   //fetch data from server
 
@@ -17,6 +18,7 @@ class UserModel {
       uid: map['uid'],
       email: map['email'],
       name: map['name'],
+      profileImage: map['profileImage'],
     );
   }
   //send data to server
@@ -25,6 +27,7 @@ class UserModel {
       'uid': uid,
       'email': email,
       'name': name,
+      'profileImage': profileImage,
     };
   }
 }

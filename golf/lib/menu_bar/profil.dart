@@ -7,48 +7,93 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:golf/widget/mp.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
+//import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import '../authentication/displayprofile.dart';
 import '../authentication/userModel.dart';
 import '../widget/navigation_drawer.dart';
-
+import 'package:ndialog/ndialog.dart';
 //import 'package:snapshot/snapshot.dart';
 
 class profil extends StatefulWidget {
+  const profil({Key? key}) : super(key: key);
+
   @override
   _profilState createState() => _profilState();
 }
 
 class _profilState extends State<profil> {
-  // File? file;
   User? user = FirebaseAuth.instance.currentUser;
-  UserModel loggedInUser = UserModel();
-  final _auth = FirebaseAuth.instance;
-  @override
-  void initState() {
-    super.initState();
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      this.loggedInUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
+  // UserModel loggedInUser = UserModel();
+  //final _auth = FirebaseAuth.instance;
+  final databaseRef = FirebaseFirestore.instance.collection("users");
+  UserModel? userModel;
+  //image upload
+  File? imageFile;
+  bool showLocalFile = false;
+
+  _pickImageFromGallery() async {
+    XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (xFile == null) return;
+
+    final tempImage = File(xFile.path);
+
+    imageFile = tempImage;
+    showLocalFile = true;
+    setState(() {});
+
+    ProgressDialog progressDialog = ProgressDialog(
+      context,
+      title: const Text('Uploading !!!'),
+      message: const Text('Please wait'),
+    );
+    progressDialog.show();
+    try {
+      var fileName = userModel!.email! + '.jpg';
+
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child(fileName)
+          .putFile(imageFile!);
+
+      TaskSnapshot snapshot = await uploadTask;
+
+      String profileImageUrl = await snapshot.ref.getDownloadURL();
+
+      print(profileImageUrl);
+
+      progressDialog.dismiss();
+    } catch (e) {
+      progressDialog.dismiss();
+
+      print(e.toString());
+    }
   }
 
-  final databaseRef = FirebaseFirestore.instance.collection("users");
+  _pickImageFromCamera() async {
+    XFile? xFile = await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (xFile == null) return;
+
+    final tempImage = File(xFile.path);
+
+    imageFile = tempImage;
+    showLocalFile = true;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        drawer: NavigationDrawerWidget(),
-        appBar: AppBar(
-          title: Text('Profil'),
-          centerTitle: true,
-          backgroundColor: Color(0XFF40E0D0),
-        ),
-        body: StreamBuilder(
+      drawer: NavigationDrawerWidget(),
+      appBar: AppBar(
+        title: Text('Profil'),
+        centerTitle: true,
+        backgroundColor: Color(0XFF40E0D0),
+      ),
+      body: Container(
+        child: StreamBuilder(
             stream: databaseRef.snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
@@ -89,7 +134,7 @@ class _profilState extends State<profil> {
                 return CircularProgressIndicator();
               }
             }),
-      );
+      ));
 
   Future<void> updateDialog(String name, BuildContext context, var key) {
     var nameController = TextEditingController(text: name);

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:golf/authentication/signup.dart';
-import 'package:golf/navigation/testHP.dart';
+//import 'package:golf/navigation/testHP.dart';
 import 'package:golf/widget/mp.dart';
 //import 'package:path/path.dart';
 
@@ -19,8 +19,8 @@ class _LoginScreenState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   // editing controller
-  final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   // firebase
   final _auth = FirebaseAuth.instance;

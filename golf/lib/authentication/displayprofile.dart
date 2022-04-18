@@ -1,252 +1,360 @@
+import 'dart:io';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:golf/widget/mp.dart';
+import 'package:image_picker/image_picker.dart';
+//import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-//import 'package:firebase/firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../authentication/displayprofile.dart';
+import '../authentication/userModel.dart';
+import '../widget/navigation_drawer.dart';
+import 'package:ndialog/ndialog.dart';
+//import 'package:snapshot/snapshot.dart';
 
-class EmailSignInProvider extends ChangeNotifier {
-  bool _isLoading = false;
-  bool _isLogin = true;
-  String _userEmail = ' ';
-  String _userPassword = ' ';
-  String _userName = ' ';
-  DateTime _dateOfBirth = DateTime.now();
-  String _isImage = '';
-  int _age = 0;
-  int _age_m = 0;
-  int _age_d = 0;
-  String _Rn = '';
-  String _tanda = ' ';
-  String _gender = ' ';
-  String _dh = ' ';
-  String _diagnos = ' ';
-  String _race = ' ';
-  String _religion = ' ';
+class profil extends StatefulWidget {
+  const profil({Key? key}) : super(key: key);
 
-  EmailSignInProvider() {
-    _isLoading = false;
-    _isLogin = true;
-    _userEmail = '';
-    _userPassword = '';
-    _userName = '';
-    _dateOfBirth = DateTime.now();
-    _isImage = '';
-    _age = 0;
-    String _Rn = '';
-    String _tanda = '';
-    String _gender = ' ';
-    String _dh = '';
-    String _diagnos = '';
-    String _race = '';
-    String _religion = '';
-  }
-  String get isGender => _gender;
+  @override
+  _profilState createState() => _profilState();
+}
 
-  set isGender(String value) {
-    _gender = value;
-    notifyListeners();
-  }
+class _profilState extends State<profil> {
+  User? user = FirebaseAuth.instance.currentUser;
+  // UserModel loggedInUser = UserModel();
+  //final _auth = FirebaseAuth.instance;
+  final databaseRef = FirebaseFirestore.instance.collection("users");
+  UserModel? userModel;
+  //image upload
+  File? imageFile;
+  bool showLocalFile = false;
 
-  String get isdh => _dh;
+  _pickImageFromGallery() async {
+    XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-  set isdh(String value) {
-    _dh = value;
-    notifyListeners();
-  }
+    if (xFile == null) return;
 
-  String get isdiagnos => _diagnos;
+    final tempImage = File(xFile.path);
 
-  set isdiagnos(String value) {
-    _diagnos = value;
-    notifyListeners();
-  }
+    imageFile = tempImage;
+    showLocalFile = true;
+    setState(() {});
 
-  String get isbangsa => _race;
-
-  set isbangsa(String value) {
-    _race = value;
-    notifyListeners();
-  }
-
-  String get isreligion => _religion;
-
-  set isreligion(String value) {
-    _religion = value;
-    notifyListeners();
-  }
-
-  bool get isLoading => _isLoading;
-
-  set phoneNumber(String? phoneNumber) {}
-
-  String get isImage => _isImage;
-
-  set isImage(String value) {
-    _isImage = value;
-    notifyListeners();
-  }
-
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
-  bool get isLogin => _isLogin;
-
-  set isLogin(bool value) {
-    _isLogin = value;
-    notifyListeners();
-  }
-
-  String get userEmail => _userEmail;
-
-  set userEmail(String value) {
-    _userEmail = value;
-    notifyListeners();
-  }
-
-  String get userRn => _Rn;
-  set userRn(String value) {
-    _Rn = value;
-    notifyListeners();
-  }
-
-  String get userPassword => _userPassword;
-
-  set userPassword(String value) {
-    _userPassword = value;
-    notifyListeners();
-  }
-
-  String get UserNamed => _userName;
-
-  set UserNamed(String value) {
-    _userName = value;
-    notifyListeners();
-  }
-
-  DateTime get dateOfBirth => _dateOfBirth;
-
-  set dateOfBirth(DateTime value) {
-    _dateOfBirth = value;
-    notifyListeners();
-  }
-
-  int get Age => _age;
-  set Age(int value) {
-    _age = value;
-    notifyListeners();
-  }
-
-  int get Age_m => _age_m;
-  set Age_m(int value) {
-    _age_m = value;
-    notifyListeners();
-  }
-
-  int get Age_d => _age_d;
-  set Age_d(int value) {
-    _age_d = value;
-    notifyListeners();
-  }
-
-  String get Tanda => _tanda;
-  set Tanda(String value) {
-    _tanda = value;
-    notifyListeners();
-  }
-
-  Future<bool> login() async {
+    ProgressDialog progressDialog = ProgressDialog(
+      context,
+      title: const Text('Uploading !!!'),
+      message: const Text('Please wait'),
+    );
+    progressDialog.show();
     try {
-      isLoading = true;
-      final user = FirebaseAuth.instance.currentUser;
+      var fileName = userModel!.email! + '.jpg';
 
-      print(userEmail);
-      print(userPassword);
-      print('see heredadadaasdadasddasdadasdasdsdasddasdasdasdsadasdas');
-      print(UserNamed);
-      //print(Image.network(isImage));
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child(fileName)
+          .putFile(imageFile!);
 
-      if (isLogin) {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: userEmail,
-          password: userPassword,
-        );
-      } else {
-        registerWithEmailAndPassword(email: userEmail, password: userPassword);
-      }
+      TaskSnapshot snapshot = await uploadTask;
 
-      isLoading = false;
-      return true;
-    } catch (err) {
-      print(err);
-      isLoading = false;
-      return false;
+      String profileImageUrl = await snapshot.ref.getDownloadURL();
+
+      print(profileImageUrl);
+
+      progressDialog.dismiss();
+    } catch (e) {
+      progressDialog.dismiss();
+
+      print(e.toString());
     }
   }
 
-  Future registerWithEmailAndPassword({
-    required String email,
-    required password,
-    userName,
-    image,
-    age,
-    //phoneNumber
-  }) async {
-    try {
-      CollectionReference users =
-          FirebaseFirestore.instance.collection("usersPatient");
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+  _pickImageFromCamera() async {
+    XFile? xFile = await ImagePicker().pickImage(source: ImageSource.camera);
 
-      final user = FirebaseAuth.instance.currentUser;
+    if (xFile == null) return;
 
-      _isImage =
-          'https://i.pinimg.com/originals/0c/3b/3a/0c3b3adb1a7530892e55ef36d3be6cb8.png';
-      users
-          .add({
-            'name': UserNamed,
-            'age_year': Age,
-            'age_month': Age_m,
-            'age_day': Age_d,
-            //'year': Tanda,
-            'photourl': isImage,
-            'email': userEmail,
-            'Rn': userRn,
-            'dob': dateOfBirth,
-            'gender': isGender,
-            'Dominant hand': isdh,
-            'Bangsa': isbangsa,
-            'Agama': isreligion,
-            'Diagnosis': isdiagnos,
-          })
-          .then((value) => print('Users Added'))
-          .catchError((error) => print('Failed to add user: $error'));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
-    }
+    final tempImage = File(xFile.path);
+
+    imageFile = tempImage;
+    showLocalFile = true;
+    setState(() {});
   }
 
-  /* Future<void> addUser() {
-    // Call the user's CollectionReference to add a new user
-    return users
-        .add({
-          'full_name': fullName, // John Doe
-          'company': company, // Stokes and Sons
-          'age': age // 42
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        drawer: NavigationDrawerWidget(),
+        appBar: AppBar(
+          title: Text('Profil'),
+          centerTitle: true,
+          backgroundColor: Color(0XFF40E0D0),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                  radius: 80,
+                  backgroundImage: showLocalFile
+                      ? FileImage(imageFile!) as ImageProvider
+                      : UserModel().profileImage == ''
+                          ? const NetworkImage(
+                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU')
+                          : NetworkImage('')),
+              IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.image),
+                                  title: const Text('From Gallery'),
+                                  onTap: () {
+                                    _pickImageFromGallery();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.camera_alt),
+                                  title: const Text('From Camera'),
+                                  onTap: () {
+                                    _pickImageFromCamera();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+
+                    StreamBuilder(
+                        stream: databaseRef.snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasData) {
+                            final data = snapshot.requireData;
+                            return ListView.builder(
+                                //  itemCount: snapshot.data!.docs.length,
+                                itemCount: data.size,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        if ('${data.docs[index]['email']}' ==
+                                            user!.email!)
+                                          ListTile(
+                                            title: Text('Name'),
+                                            subtitle: Text(
+                                              // snapshot.data!.docs[index]['name'], context,style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold
+                                              '${data.docs[index]['name']}',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            trailing: Icon(Icons.edit_outlined),
+                                            onTap: () {
+                                              updateDialog(
+                                                  snapshot.data!.docs[index]
+                                                      ['name'], //
+                                                  context,
+                                                  snapshot.hasData);
+                                            },
+                                            // dense: true,
+                                            // selected: true,
+                                            // enabled: true,
+                                          ),
+                                      ],
+                                    ),
+                                  );
+                                });
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        });
+                  })
+            ],
+          ),
+        ),
+      );
+
+  Future<void> updateDialog(String name, BuildContext context, var key) {
+    var nameController = TextEditingController(text: name);
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Update Data"),
+            content: Column(
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                      border: UnderlineInputBorder(), labelText: "Name"),
+                )
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    updateProfile(nameController.text, key);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Update")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancel"))
+            ],
+          );
+        });
   }
-*/
-  Future logout() async {
-    FirebaseAuth.instance.signOut();
+
+  void updateProfile(String name, var key) {
+    Map<String, String> x = {"Name": name};
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    //User? user = _auth.currentUser;
+
+    UserModel userModel = UserModel();
+    //final databaseRef = FirebaseDatabase.instance.ref().child("users");
+    firebaseFirestore.collection("users").doc(user!.uid).update({'name': name});
+    Fluttertoast.showToast(
+        msg: "Saved successfully :) ",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER);
   }
 }
+//last
+
+
+
+
+/*class profil extends StatefulWidget {
+  @override
+  _profilState createState() => _profilState();
+}
+
+class _profilState extends State<profil> {
+  File? file;
+  User? user = FirebaseAuth.instance.currentUser;
+  UserModel loggedInUser = UserModel();
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
+
+  TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Edit Profile"),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              /* file == null
+                  ? InkWell(
+                      onTap: () {
+                        chooseImage();
+                      },
+                      child: Icon(
+                        Icons.image,
+                        size: 48,
+                      ),
+                    )
+                  : Image.file(file!),*/
+              SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(
+                    labelText: "${loggedInUser.name} ",
+                    hintText: "${loggedInUser.name} ",
+                    border: OutlineInputBorder()),
+              ),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(
+                    labelText: "${loggedInUser.name} ",
+                    //hintText: "Enter name",
+                    border: OutlineInputBorder()),
+              ),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(
+                    labelText: "${loggedInUser.name} ",
+                    //hintText: "Enter name",
+                    border: OutlineInputBorder()),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    updateProfile(context);
+                  },
+                  child: Text("Update profile"))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  chooseImage() async {
+    XFile? xfile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    print("file " + xfile!.path);
+    file = File(xfile.path);
+    setState(() {});
+  }
+
+  updateProfile(BuildContext context) async {
+    Map<String, dynamic> map = Map();
+    if (file != null) {
+      String url = await uploadImage();
+      map['profileImage'] = url;
+    }
+    map['name'] = _textEditingController.text;
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update(map);
+    Navigator.pop(context);
+  }
+
+  Future<String> uploadImage() async {
+    TaskSnapshot taskSnapshot = await FirebaseStorage.instance
+        .ref()
+        .child("profile")
+        .child(
+            FirebaseAuth.instance.currentUser!.uid + "_" + basename(file!.path))
+        .putFile(file!);
+
+    return taskSnapshot.ref.getDownloadURL();
+  }
+}
+*/

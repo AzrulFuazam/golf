@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => EmailSignInProvider()),
+          // ChangeNotifierProvider(create: (context) => EmailSignInProvider()),
           //ChangeNotifierProvider(create: (context) => googlesignin()),
           ChangeNotifierProvider(
               create: (context) => NavigationProvider()), //for navigationBar
