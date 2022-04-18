@@ -73,7 +73,7 @@ class _profilState extends State<profil> {
                                 trailing: Icon(Icons.edit_outlined),
                                 onTap: () {
                                   updateDialog(
-                                      snapshot.data!.docs[index]['name'],
+                                      snapshot.data!.docs[index]['name'], //
                                       context,
                                       snapshot.hasData);
                                 },
