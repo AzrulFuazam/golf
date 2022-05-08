@@ -1,28 +1,20 @@
+import 'dart:ffi';
 import 'dart:io';
-import 'package:firebase_database/firebase_database.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:golf/widget/mp.dart';
-import 'package:image_picker/image_picker.dart';
-//import 'package:path/path.dart';
-import 'package:provider/provider.dart';
-import '../authentication/displayprofile.dart';
-import '../authentication/userModel.dart';
-import '../widget/navigation_drawer.dart';
-import 'package:ndialog/ndialog.dart';
-//import 'package:snapshot/snapshot.dart';
 
-class profil extends StatefulWidget {
-  const profil({Key? key}) : super(key: key);
+import '../widget/navigation_drawer.dart';
+
+class UpdateRecordFirestore extends StatefulWidget {
+  UpdateRecordFirestore({Key? key}) : super(key: key);
 
   @override
-  _profilState createState() => _profilState();
+  _UpdateRecordFirestore createState() => _UpdateRecordFirestore();
 }
 
-class _profilState extends State<profil> {
+class _UpdateRecordFirestore extends State<UpdateRecordFirestore> {
   final firestoreRef = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
   @override
@@ -30,7 +22,7 @@ class _profilState extends State<profil> {
     return Scaffold(
       drawer: NavigationDrawerWidget(),
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Profil'),
         centerTitle: true,
         backgroundColor: Color(0XFF40E0D0),
       ),
@@ -91,7 +83,7 @@ class _profilState extends State<profil> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Update Name :" + doc.id),
+            title: Text("Update Name" + doc.id),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,

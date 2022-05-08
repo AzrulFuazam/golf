@@ -1,15 +1,25 @@
-final hai = 'Selamat Datang';
+final hai = 'Welcome';
 final urlImage = 'assets/golf_ball.jpg';
-final name = '';
+final Fname = '';
 final email = '';
 
 class UserModel {
   String? uid;
   String? email;
-  String? name;
+  String? Fname;
+  String? Sname;
+  String? address;
+  String? phoneNumber;
   String? profileImage;
 
-  UserModel({this.uid, this.email, this.name, this.profileImage});
+  UserModel(
+      {this.uid,
+      this.email,
+      this.Fname,
+      this.Sname,
+      this.address,
+      this.phoneNumber,
+      this.profileImage});
 
   //fetch data from server
 
@@ -17,7 +27,10 @@ class UserModel {
     return UserModel(
       uid: map['uid'],
       email: map['email'],
-      name: map['name'],
+      Fname: map['First name'],
+      Sname: map['Second name'],
+      address: map['Address'],
+      phoneNumber: map['Phone Number'],
       profileImage: map['profileImage'],
     );
   }
@@ -26,7 +39,10 @@ class UserModel {
     return {
       'uid': uid,
       'email': email,
-      'name': name,
+      'First name': Fname,
+      'Second name': Sname,
+      'Address': address,
+      'Phone number': phoneNumber,
       'profileImage': profileImage,
     };
   }

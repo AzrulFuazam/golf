@@ -27,7 +27,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   // editing Controller
   final firstNameEditingController = new TextEditingController();
-  // final secondNameEditingController = new TextEditingController();
+  final secondNameEditingController = new TextEditingController();
+  final addressEditingController = new TextEditingController();
+  final phoneNumberEditingController = new TextEditingController();
   final emailEditingController = new TextEditingController();
   final passwordEditingController = new TextEditingController();
   final confirmPasswordEditingController = new TextEditingController();
@@ -64,6 +66,83 @@ class _SignUpPageState extends State<SignUpPage> {
 
     //second name field
 
+    final secondNameField = TextFormField(
+        autofocus: false,
+        controller: secondNameEditingController,
+        keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("Second Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
+        onSaved: (value) {
+          secondNameEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.account_circle),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Second Name",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+    final addressField = TextFormField(
+        autofocus: false,
+        controller: addressEditingController,
+        keyboardType: TextInputType.name,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return ("Address cannot be Empty");
+          }
+          return null;
+        },
+        onSaved: (value) {
+          addressEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.account_circle),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+    final phoneNumberField = TextFormField(
+        autofocus: false,
+        controller: phoneNumberEditingController,
+        keyboardType: TextInputType.name,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return ("Phone Number cannot be Empty");
+          }
+          if (!RegExp("^[0]1+[0-9]").hasMatch(value)) {
+            //^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]
+            return ("Please Enter a valid number");
+          }
+          return null;
+        },
+        onSaved: (value) {
+          phoneNumberEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.account_circle),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Phone Number",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+//^(?:[+0]9)?[0-9]{10}$
     //email field
     final emailField = TextFormField(
         autofocus: false,
@@ -198,6 +277,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(height: 45),
                     firstNameField,
                     SizedBox(height: 20),
+                    secondNameField,
+                    SizedBox(height: 20),
+                    addressField,
+                    SizedBox(height: 20),
+                    phoneNumberField,
+                    SizedBox(height: 20),
                     emailField,
                     SizedBox(height: 20),
                     passwordField,
@@ -267,7 +352,10 @@ class _SignUpPageState extends State<SignUpPage> {
     // writing all the values
     userModel.email = user!.email;
     userModel.uid = user.uid;
-    userModel.name = firstNameEditingController.text;
+    userModel.Fname = firstNameEditingController.text;
+    userModel.Sname = secondNameEditingController.text;
+    userModel.address = addressEditingController.text;
+    userModel.phoneNumber = phoneNumberEditingController.text;
 
     await firebaseFirestore
         .collection("users")

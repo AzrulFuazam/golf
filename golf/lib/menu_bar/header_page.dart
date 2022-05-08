@@ -8,7 +8,7 @@ class HeaderPage extends StatelessWidget {
         drawer: NavigationDrawerWidget(),
         appBar: AppBar(
           backgroundColor: Color(0XFF40E0D0),
-          title: Text(name),
+          title: Text(Fname),
           centerTitle: true,
         ),
         body: Image.network(

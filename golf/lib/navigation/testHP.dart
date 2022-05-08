@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: 10,
               ),
-              Text("${loggedInUser.name} ",
+              Text("${loggedInUser.Fname} ",
                   style: TextStyle(
                     color: Colors.black54,
                     fontWeight: FontWeight.w500,

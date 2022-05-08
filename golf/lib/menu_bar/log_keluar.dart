@@ -12,5 +12,6 @@ class log_keluar extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Color(0XFF40E0D0),
         ),
+        // body: ElevatedButton.icon(onPressed: (FirebaseAuth.instance.signOut){}, icon: Icon(Icons.arrow_back,size: 32,), label: Text('Log out',style: TextStyle(fontSize: 24),)),
       );
 }

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:golf/model/navigation_item.dart';
 import 'package:golf/provider/navigation_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../menu_bar/domain.dart';
 import '../menu_bar/header_page.dart';
 import '../menu_bar/laman_utama.dart';
 import '../menu_bar/log_keluar.dart';
+import '../menu_bar/newRound.dart';
 import '../menu_bar/plugins_page.dart';
 import '../menu_bar/profil.dart';
 import '../menu_bar/updates_page.dart';
@@ -34,7 +33,7 @@ class _MainPageState extends State<MainPage> {
       case NavigationItem.lamanUtama:
         return laman_utama();
       case NavigationItem.workflow:
-        return domain();
+        return newRound();
       case NavigationItem.updates:
         return UpdatesPage();
       case NavigationItem.plugins:
