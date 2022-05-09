@@ -124,7 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
           if (value!.isEmpty) {
             return ("Phone Number cannot be Empty");
           }
-          if (!RegExp("^[0]1+[0-9]").hasMatch(value)) {
+          if (!RegExp(r'^(?:[+0][1])?[0-9]{10,11}$').hasMatch(value)) {
             //^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]
             return ("Please Enter a valid number");
           }

@@ -91,7 +91,7 @@ class _profilState extends State<profil> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Update Name :" + doc.id),
+            title: Text("Update Information :" /*+ doc.id*/),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,

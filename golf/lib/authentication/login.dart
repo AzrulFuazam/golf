@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:golf/authentication/resetPassword.dart';
 import 'package:golf/authentication/signup.dart';
 //import 'package:golf/navigation/testHP.dart';
 import 'package:golf/widget/mp.dart';
@@ -130,7 +131,31 @@ class _LoginScreenState extends State<LoginPage> {
                     emailField,
                     SizedBox(height: 25),
                     passwordField,
-                    SizedBox(height: 35),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 1),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return resetPassword();
+                              }));
+                            },
+                            child: Text(
+                              'Forgot Password',
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     loginButton,
                     SizedBox(height: 15),
                     Row(
